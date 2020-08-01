@@ -2,7 +2,9 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 
 import { HealthModule } from "./health/health.module";
+import { AuthModule } from "./auth/auth.module";
 import { configPattern, configValidation } from "./config";
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -13,8 +15,8 @@ import { configPattern, configValidation } from "./config";
       envFilePath: [".env"],
     }),
     HealthModule,
+    AuthModule,
+    UsersModule,
   ],
-  controllers: [],
-  providers: [],
 })
 export class AppModule {}
