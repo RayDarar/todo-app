@@ -50,6 +50,20 @@ export class UsersService {
     return user._id;
   }
 
+  public async validateUser(
+    userInfo: UserCreateDto,
+  ): Promise<"ok" | "not-found" | "invalid"> {
+    const user = await this.UserModel.findOne({
+      username: userInfo.username,
+    });
+
+    if (!user) return "not-found";
+
+    const result = await bcrypt.compare(userInfo.password, user.password);
+    
+    return result ? "ok" : "invalid";
+  }
+
   get usersSecret(): string {
     return this.configService.get<string>("secrets.users");
   }

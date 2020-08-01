@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { MongooseModule } from "@nestjs/mongoose";
+import { RedisModule } from "nestjs-redis";
 
 import { HealthModule } from "./health/health.module";
 import { AuthModule } from "./auth/auth.module";
@@ -23,6 +24,15 @@ import { UsersModule } from "./users/users.module";
         useFindAndModify: true,
         uri: configService.get<string>("db.uri"),
       }),
+    }),
+    RedisModule.forRootAsync({
+      useFactory: (configService: ConfigService) => {
+        return {
+          port: configService.get<number>("redis.port"),
+          password: configService.get<string>("redis.password"),
+        };
+      },
+      inject: [ConfigService],
     }),
     HealthModule,
     AuthModule,
