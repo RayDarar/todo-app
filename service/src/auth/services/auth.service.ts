@@ -71,6 +71,15 @@ export class AuthService {
     } catch (error) {}
   }
 
+  public validateAccessToken(accessToken: string): boolean {
+    try {
+      jwt.verify(accessToken, this.tokenSecret) as TokenPayload;
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
   get tokenSecret() {
     return this.configService.get<string>("secrets.token");
   }

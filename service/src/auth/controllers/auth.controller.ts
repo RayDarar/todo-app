@@ -46,4 +46,11 @@ export class AuthController {
   public async logout(@Body("refreshToken") refreshToken: string) {
     await this.service.logout(refreshToken);
   }
+
+  @HttpCode(200)
+  @Post("/validate")
+  public async validateAccessToken(@Body("accessToken") accessToken: string) {
+    const result = this.service.validateAccessToken(accessToken);
+    if (!result) throw new BadRequestException();
+  }
 }
