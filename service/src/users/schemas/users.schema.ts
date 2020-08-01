@@ -1,5 +1,6 @@
-import { Document } from "mongoose";
+import { Document, SchemaTypes } from "mongoose";
 import { Prop, SchemaFactory, Schema } from "@nestjs/mongoose";
+import { Todo } from "../todos/schemas/todo.schema";
 
 @Schema()
 export class User extends Document {
@@ -14,6 +15,14 @@ export class User extends Document {
     required: true,
   })
   password: string;
+
+  @Prop([
+    {
+      type: SchemaTypes.ObjectId,
+      ref: Todo.name,
+    },
+  ])
+  todos: Todo[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

@@ -45,6 +45,7 @@ export class UsersService {
         password,
         (await bcrypt.genSalt()) + this.usersSecret,
       ),
+      todos: [],
     });
 
     return user._id;
@@ -60,7 +61,7 @@ export class UsersService {
     if (!user) return "not-found";
 
     const result = await bcrypt.compare(userInfo.password, user.password);
-    
+
     return result ? "ok" : "invalid";
   }
 
