@@ -1,10 +1,11 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { MongooseModule } from "@nestjs/mongoose";
 
 import { HealthModule } from "./health/health.module";
 import { AuthModule } from "./auth/auth.module";
 import { configPattern, configValidation } from "./config";
-import { UsersModule } from './users/users.module';
+import { UsersModule } from "./users/users.module";
 
 @Module({
   imports: [
@@ -13,6 +14,14 @@ import { UsersModule } from './users/users.module';
       load: [configPattern],
       validationSchema: configValidation,
       envFilePath: [".env"],
+    }),
+    MongooseModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        uri: configService.get<string>("db.uri"),
+      }),
     }),
     HealthModule,
     AuthModule,
