@@ -1,7 +1,7 @@
 import { Document } from "mongoose";
-import { Prop, SchemaFactory } from "@nestjs/mongoose";
-import { string } from "@hapi/joi";
+import { Prop, SchemaFactory, Schema } from "@nestjs/mongoose";
 
+@Schema()
 export class User extends Document {
   @Prop({
     type: String,
@@ -10,7 +10,7 @@ export class User extends Document {
   username: string;
 
   @Prop({
-    type: string,
+    type: String,
     required: true,
   })
   password: string;

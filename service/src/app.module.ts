@@ -20,6 +20,7 @@ import { UsersModule } from "./users/users.module";
       useFactory: (configService: ConfigService) => ({
         useNewUrlParser: true,
         useUnifiedTopology: true,
+        useFindAndModify: true,
         uri: configService.get<string>("db.uri"),
       }),
     }),
