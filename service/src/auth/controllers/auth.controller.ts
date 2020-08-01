@@ -29,7 +29,12 @@ export class AuthController {
       throw new BadRequestException("Password is not correct");
     if (result == "not-found") throw new NotFoundException("User not found");
 
-    return this.service.generateTokenPair(userInfo.username);
+    const pair = await this.service.generateTokenPair(userInfo.username);
+    const id = await this.usersService.getIdByUsername(userInfo.username);
+    return {
+      ...pair,
+      id,
+    };
   }
 
   @HttpCode(200)

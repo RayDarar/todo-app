@@ -19,6 +19,13 @@ export class UsersService {
     return this.UserModel.find().exec();
   }
 
+  public async getIdByUsername(username: string): Promise<string> {
+    const user = await this.UserModel.findOne({
+      username,
+    }).exec();
+    return user._id;
+  }
+
   public async getUserById(userId: string): Promise<User | null> {
     return this.UserModel.findOne({
       _id: userId,
