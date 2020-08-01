@@ -14,9 +14,9 @@ function Catch() {
   ) {
     const method = descriptor.value;
 
-    descriptor.value = async function() {
+    descriptor.value = async function(...args: any[]) {
       try {
-        return await method();
+        return await method(...args);
       } catch (error) {
         return error.response;
       }
@@ -32,5 +32,28 @@ export class AuthApi {
     return api.post("/auth/validate", {
       accessToken: token
     });
+  }
+
+  @Catch()
+  static async authenticate(username: string, password: string) {
+    return api.post("/auth/authenticate", {
+      username,
+      password
+    });
+  }
+}
+
+export class UsersApi {
+  @Catch()
+  static async createUser(username: string, password: string) {
+    return api.post("/users/", {
+      username,
+      password
+    });
+  }
+
+  @Catch()
+  static async getUserById(userId: string) {
+    return api.get(`/users/${userId}`);
   }
 }

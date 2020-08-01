@@ -5,6 +5,10 @@ Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
+    path: "/",
+    component: () => import("@/views/home-page/HomePage.vue")
+  },
+  {
     path: "/sign-in",
     component: () => import("@/views/SignInPage.vue")
   },
