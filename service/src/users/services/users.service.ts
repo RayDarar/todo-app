@@ -27,6 +27,7 @@ export class UsersService {
         username: 1,
         _id: 1,
       })
+      .populate("todos")
       .exec();
   }
 

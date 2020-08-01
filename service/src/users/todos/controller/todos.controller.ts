@@ -6,6 +6,8 @@ import {
   Param,
   Body,
   NotFoundException,
+  Put,
+  Delete,
 } from "@nestjs/common";
 
 import { TodosService } from "../services/todos.service";
@@ -29,5 +31,31 @@ export class TodosController {
     if (!result) throw new NotFoundException("User not found");
 
     return result;
+  }
+
+  @Put("/:todo_id")
+  public async updateTodo(
+    @Param("user_id") userId: string,
+    @Param("todo_id") todoId: string,
+    @Body("title") title: string,
+    @Body("status") status: boolean,
+  ) {
+    const result = await this.service.updateTodo(userId, todoId, title, status);
+    if (result == "user-not-found")
+      throw new NotFoundException("User not found");
+    if (result == "todo-not-found")
+      throw new NotFoundException("Todo not found");
+  }
+
+  @Delete("/:todo_id")
+  public async deleteTodo(
+    @Param("user_id") userId: string,
+    @Param("todo_id") todoId: string,
+  ) {
+    const result = await this.service.deleteTodo(userId, todoId);
+    if (result == "user-not-found")
+      throw new NotFoundException("User not found");
+    if (result == "todo-not-found")
+      throw new NotFoundException("Todo not found");
   }
 }
