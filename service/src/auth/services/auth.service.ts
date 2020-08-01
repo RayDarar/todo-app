@@ -41,10 +41,15 @@ export class AuthService {
     };
   }
 
-  public async validateRefreshToken(refreshToken: string): Promise<string | false> {
+  public async validateRefreshToken(
+    refreshToken: string,
+  ): Promise<string | false> {
     try {
-      const { username } = jwt.verify(refreshToken, this.tokenSecret) as TokenPayload;
-      
+      const { username } = jwt.verify(
+        refreshToken,
+        this.tokenSecret,
+      ) as TokenPayload;
+
       const token = await this.redisClient.get(username);
 
       if (!token || refreshToken != token) throw new Error();
@@ -53,6 +58,17 @@ export class AuthService {
     } catch (error) {
       return false;
     }
+  }
+
+  public async logout(refreshToken: string): Promise<void> {
+    try {
+      const { username } = jwt.verify(
+        refreshToken,
+        this.tokenSecret,
+      ) as TokenPayload;
+
+      this.redisClient.set(username, "");
+    } catch (error) {}
   }
 
   get tokenSecret() {

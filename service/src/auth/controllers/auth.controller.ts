@@ -40,4 +40,10 @@ export class AuthController {
 
     return this.service.generateTokenPair(result);
   }
+
+  @HttpCode(200)
+  @Post("/logout")
+  public async logout(@Body("refreshToken") refreshToken: string) {
+    await this.service.logout(refreshToken);
+  }
 }
