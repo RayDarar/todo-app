@@ -34,9 +34,11 @@ export default new Vuex.Store({
       state.user = user;
     },
     [Mutations.SET_SNACKBAR](state, payload) {
-      state.snackbar.isShow = payload.isShow;
-      state.snackbar.message = payload.message;
-      state.snackbar.color = payload.color;
+      state.snackbar.isShow = payload.isShow || false;
+      state.snackbar.message = payload.message ? payload.message : "";
+      state.snackbar.color = payload.color
+        ? payload.color
+        : state.snackbar.color;
     }
   },
   actions: {
@@ -76,7 +78,7 @@ export default new Vuex.Store({
       return false;
     },
     showSnackbar({ commit }, payload) {
-      const { message = "", isShow = true, color = "success" } = payload;
+      const { message, isShow, color } = payload;
 
       commit(Mutations.SET_SNACKBAR, {
         message,

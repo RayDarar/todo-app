@@ -10,7 +10,7 @@
       v-model="snackbar.isShow"
       :color="snackbar.color"
     >
-      {{ snackbar.value }}
+      <span class="pa-1">{{ snackbar.message }}</span>
       <template v-slot:action="{ attrs }">
         <v-btn text v-bind="attrs" @click="closeSnackbar">
           Close

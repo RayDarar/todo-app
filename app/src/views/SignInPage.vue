@@ -55,7 +55,8 @@ export default class SignInPage extends Vue {
 
     this.$store.dispatch("showSnackbar", {
       message: "Data is invalid",
-      color: "error"
+      color: "error",
+      isShow: true
     });
   }
 }
