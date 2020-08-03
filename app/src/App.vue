@@ -31,8 +31,11 @@ export default class App extends Vue {
     const result = await this.$store.dispatch("validateToken");
 
     if (!result) {
-      routeTo(this.$router, "/sign-in");
+      return routeTo(this.$router, "/sign-in");
     }
+
+    await this.$store.dispatch("fetchUser");
+    routeTo(this.$router, "/");
   }
 
   closeSnackbar() {

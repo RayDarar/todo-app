@@ -18,8 +18,11 @@ export default new Vuex.Store({
   },
   getters: {
     token(state) {
-      if (state.token) state.token = localStorage.getItem("token") as string;
+      if (!state.token) state.token = localStorage.getItem("token") as string;
       return state.token;
+    },
+    userId() {
+      return localStorage.getItem("user-id");
     }
   },
   mutations: {
@@ -32,6 +35,9 @@ export default new Vuex.Store({
     },
     [Mutations.SET_USER](state, user) {
       state.user = user;
+    },
+    [Mutations.SET_USER_ID](_state, userId) {
+      localStorage.setItem("user-id", userId);
     },
     [Mutations.SET_SNACKBAR](state, payload) {
       state.snackbar.isShow = payload.isShow || false;
@@ -48,11 +54,13 @@ export default new Vuex.Store({
       const response = await AuthApi.validateToken(localToken);
       return response.status == 200;
     },
-    async fetchUser({ commit }, userId) {
-      const user = await UsersApi.getUserById(userId);
+    async fetchUser({ commit, getters }) {
+      const id = getters.userId;
+
+      const user = await UsersApi.getUserById(id);
       commit(Mutations.SET_USER, user.data);
     },
-    async signIn({ commit, dispatch }, payload) {
+    async fetchToken({ commit, state }, payload) {
       const { username, password } = payload;
 
       const response = await AuthApi.authenticate(username, password);
@@ -61,19 +69,37 @@ export default new Vuex.Store({
         const data = response.data;
         commit(Mutations.SET_TOKEN, data.accessToken);
         commit(Mutations.SET_REFRESH_TOKEN, data.refreshToken);
-        await dispatch("fetchUser", data.id);
+        commit(Mutations.SET_USER_ID, data.id);
+        return true;
+      }
+      return false;
+    },
+    async signIn({ state, dispatch }, payload) {
+      const { username, password } = payload;
+
+      const result = await dispatch("fetchToken", {
+        username,
+        password
+      });
+
+      if (result) {
+        await dispatch("fetchUser", state.userId);
         return true;
       }
       return false;
     },
     async signUp({ dispatch }, payload) {
       const { username, password } = payload;
-
       const response = await UsersApi.createUser(username, password);
 
       if (response.status == 201) {
         await dispatch("fetchUser", response.data);
-        return true;
+        const result = await dispatch("fetchToken", {
+          username,
+          password
+        });
+
+        return true && result;
       }
       return false;
     },
