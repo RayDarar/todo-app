@@ -1,31 +1,62 @@
 <template>
-  <div id="sign-in">
-    <input type="text" v-model="username" placeholder="Username" />
-    <input type="password" v-model="password" placeholder="Password" />
-    <button @click="signIn">Sign In</button>
+  <v-card id="sign-in">
+    <v-card-title class="mb-0 pa-0">
+      Sign In
+    </v-card-title>
+    <v-form ref="form">
+      <v-text-field
+        prepend-inner-icon="mdi-account"
+        v-model="username"
+        label="Username"
+        required
+        :rules="validators"
+      ></v-text-field>
+      <v-text-field
+        prepend-inner-icon="mdi-lock"
+        v-model="password.value"
+        type="password"
+        label="Password"
+        required
+        :rules="validators"
+      ></v-text-field>
 
-    <router-link to="/sign-up">Go to Sign Up</router-link>
-  </div>
+      <v-btn color="primary" @click="signIn">Login</v-btn>
+      <v-btn text to="/sign-up">Sign Up</v-btn>
+    </v-form>
+  </v-card>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { routeTo } from "@/utils";
 
 @Component({})
 export default class SignInPage extends Vue {
   username = "";
-  password = "";
+  password = {
+    value: "",
+    isShow: false
+  };
+  validators = [(v: string) => !!v];
 
   async signIn() {
+    const form = this.$refs.form as any;
+    if (!form.validate()) return;
+
     const result = await this.$store.dispatch("signIn", {
       username: this.username,
-      password: this.password
+      password: this.password.value
     });
 
     if (result) {
-      this.$router.push("/");
+      return routeTo(this.$router, "/");
     }
+
+    this.$store.dispatch("showSnackbar", {
+      message: "Data is invalid",
+      color: "error"
+    });
   }
 }
 </script>
@@ -40,8 +71,6 @@ export default class SignInPage extends Vue {
 
   display: flex;
   flex-direction: column;
-
-  border: 2px solid black;
 
   * {
     margin: 0.5em;

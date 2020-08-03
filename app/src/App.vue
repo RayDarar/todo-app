@@ -1,19 +1,48 @@
 <template>
-  <div id="app">
-    <router-view />
-  </div>
+  <v-app>
+    <v-main>
+      <router-view></router-view>
+    </v-main>
+    <v-snackbar
+      absolute
+      bottom
+      right
+      v-model="snackbar.isShow"
+      :color="snackbar.color"
+    >
+      {{ snackbar.value }}
+      <template v-slot:action="{ attrs }">
+        <v-btn text v-bind="attrs" @click="closeSnackbar">
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+  </v-app>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { routeTo } from "@/utils";
 
 @Component({})
 export default class App extends Vue {
   async created() {
     const result = await this.$store.dispatch("validateToken");
 
-    if (!result) this.$router.push("/sign-in");
+    if (!result) {
+      routeTo(this.$router, "/sign-in");
+    }
+  }
+
+  closeSnackbar() {
+    this.$store.dispatch("showSnackbar", {
+      message: "",
+      isShow: false
+    });
+  }
+  get snackbar() {
+    return this.$store.state.snackbar;
   }
 }
 </script>
@@ -24,9 +53,5 @@ export default class App extends Vue {
   padding: 0;
   outline: none;
   box-sizing: border-box;
-}
-
-#app {
-  height: 100vh;
 }
 </style>

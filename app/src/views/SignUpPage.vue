@@ -11,6 +11,7 @@
 <script lang="ts">
 import Vue from "vue";
 import Component from "vue-class-component";
+import { routeTo } from "@/utils";
 
 @Component({})
 export default class SignUpPage extends Vue {
@@ -23,7 +24,9 @@ export default class SignUpPage extends Vue {
       password: this.password
     });
 
-    if (result) this.$router.push("/");
+    if (result) {
+      routeTo(this.$router, "/");
+    }
   }
 }
 </script>

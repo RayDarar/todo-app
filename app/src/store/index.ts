@@ -2,12 +2,19 @@ import Vue from "vue";
 import Vuex from "vuex";
 import { AuthApi, UsersApi } from "@/api";
 
+import { Mutations } from "./mutations";
+
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
     token: "",
-    user: null
+    user: null,
+    snackbar: {
+      message: "",
+      isShow: false,
+      color: "success"
+    }
   },
   getters: {
     token(state) {
@@ -16,15 +23,20 @@ export default new Vuex.Store({
     }
   },
   mutations: {
-    setToken(state, token) {
+    [Mutations.SET_TOKEN](state, token) {
       state.token = token;
       localStorage.setItem("token", token);
     },
-    setRefreshToken(_state, token) {
+    [Mutations.SET_REFRESH_TOKEN](_state, token) {
       localStorage.setItem("refresh-token", token);
     },
-    setUser(state, user) {
+    [Mutations.SET_USER](state, user) {
       state.user = user;
+    },
+    [Mutations.SET_SNACKBAR](state, payload) {
+      state.snackbar.isShow = payload.isShow;
+      state.snackbar.message = payload.message;
+      state.snackbar.color = payload.color;
     }
   },
   actions: {
@@ -36,7 +48,7 @@ export default new Vuex.Store({
     },
     async fetchUser({ commit }, userId) {
       const user = await UsersApi.getUserById(userId);
-      commit("setUser", user.data);
+      commit(Mutations.SET_USER, user.data);
     },
     async signIn({ commit, dispatch }, payload) {
       const { username, password } = payload;
@@ -45,8 +57,8 @@ export default new Vuex.Store({
 
       if (response.status == 200) {
         const data = response.data;
-        commit("setToken", data.accessToken);
-        commit("setRefreshToken", data.refreshToken);
+        commit(Mutations.SET_TOKEN, data.accessToken);
+        commit(Mutations.SET_REFRESH_TOKEN, data.refreshToken);
         await dispatch("fetchUser", data.id);
         return true;
       }
@@ -62,6 +74,15 @@ export default new Vuex.Store({
         return true;
       }
       return false;
+    },
+    showSnackbar({ commit }, payload) {
+      const { message = "", isShow = true, color = "success" } = payload;
+
+      commit(Mutations.SET_SNACKBAR, {
+        message,
+        isShow,
+        color
+      });
     }
   },
   modules: {}
